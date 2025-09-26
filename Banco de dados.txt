@@ -1,0 +1,39 @@
+-- Criando ENUM nativo para parentesco
+CREATE TYPE parentesco_enum AS ENUM ('FILHO', 'SOBRINHO', 'OUTROS');
+
+-- Tabela FUNCIONARIO
+CREATE TABLE funcionario (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    cpf CHAR(11) NOT NULL UNIQUE,
+    data_nascimento DATE NOT NULL,
+    salario_bruto NUMERIC(10,2) NOT NULL,
+    desconto_inss NUMERIC(10,2) DEFAULT 0.00,
+    desconto_ir NUMERIC(10,2) DEFAULT 0.00
+);
+
+-- Tabela DEPENDENTE
+CREATE TABLE dependente (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    cpf CHAR(11) NOT NULL UNIQUE,
+    data_nascimento DATE NOT NULL,
+    parentesco parentesco_enum NOT NULL,
+    funcionario_id INT NOT NULL,
+    CONSTRAINT fk_funcionario FOREIGN KEY (funcionario_id)
+        REFERENCES funcionario(id)
+        ON DELETE CASCADE
+);
+
+-- Tabela FOLHA PAGAMENTO
+CREATE TABLE folha_pagamento (
+    id SERIAL PRIMARY KEY,
+    funcionario_id INT NOT NULL,
+    data_pagamento DATE NOT NULL,
+    desconto_inss NUMERIC(10,2) NOT NULL,
+    desconto_ir NUMERIC(10,2) NOT NULL,
+    salario_liquido NUMERIC(10,2) NOT NULL,
+    CONSTRAINT fk_folha_funcionario FOREIGN KEY (funcionario_id)
+        REFERENCES funcionario(id)
+        ON DELETE CASCADE
+);
